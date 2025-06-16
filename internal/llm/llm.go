@@ -10,6 +10,7 @@ import (
 type LLM struct {
 	URL           string
 	Authorization string
+	Model         string
 }
 
 func (l *LLM) AnalyzeLog(request LLMRequestModel) (*LLMResponseModel, error) {

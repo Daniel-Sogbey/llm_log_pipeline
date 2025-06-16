@@ -16,10 +16,12 @@ import (
 
 type config struct {
 	amqpConnectionURL string
-	llmEndpoint       string
-	llmAuthorization  string
 	dbDSN             string
-	messagingQueue    struct {
+	llm               struct {
+		endpoint      string
+		authorization string
+	}
+	messagingQueue struct {
 		exchange   string
 		kind       string
 		queue      string
@@ -39,8 +41,8 @@ func main() {
 	}
 
 	llmConfig := &llm.LLM{
-		URL:           cfg.llmEndpoint,
-		Authorization: cfg.llmAuthorization,
+		URL:           cfg.llm.endpoint,
+		Authorization: cfg.llm.authorization,
 	}
 
 	db, err := connectDB(&cfg)
@@ -86,8 +88,8 @@ func connectDB(cfg *config) (*sql.DB, error) {
 
 func setUpConfig(cfg *config) {
 	flag.StringVar(&cfg.amqpConnectionURL, "amqp-connection-url", "", "amqp connection url")
-	flag.StringVar(&cfg.llmEndpoint, "llm-endpoint", "", "llm url")
-	flag.StringVar(&cfg.llmAuthorization, "llm-auth", "", "llm auth key")
+	flag.StringVar(&cfg.llm.endpoint, "llm-endpoint", "", "llm url")
+	flag.StringVar(&cfg.llm.authorization, "llm-auth", "", "llm auth key")
 	flag.StringVar(&cfg.dbDSN, "db-dsn", "", "db dsn")
 	flag.StringVar(&cfg.messagingQueue.exchange, "mq-exchange", "", "rabbitmq exchange name")
 	flag.StringVar(&cfg.messagingQueue.kind, "mq-exchange-kind", "", "rabbitmq exchange kind")
@@ -98,11 +100,11 @@ func setUpConfig(cfg *config) {
 	flag.Parse()
 
 	// Fallbacks from environment
-	if cfg.llmEndpoint == "" {
-		cfg.llmEndpoint = os.Getenv("LLM_ENDPOINT")
+	if cfg.llm.endpoint == "" {
+		cfg.llm.endpoint = os.Getenv("LLM_ENDPOINT")
 	}
-	if cfg.llmAuthorization == "" {
-		cfg.llmAuthorization = os.Getenv("LLM_AUTHORIZATION_KEY")
+	if cfg.llm.authorization == "" {
+		cfg.llm.authorization = os.Getenv("LLM_AUTHORIZATION_KEY")
 	}
 	if cfg.dbDSN == "" {
 		cfg.dbDSN = os.Getenv("DB_DSN")
@@ -128,7 +130,7 @@ func setUpConfig(cfg *config) {
 	}
 
 	log.Println("Effective Config:")
-	log.Printf("  LLM_ENDPOINT: %s", cfg.llmEndpoint)
+	log.Printf("  LLM_ENDPOINT: %s", cfg.llm.endpoint)
 	log.Printf("  DB_DSN: %s", cfg.dbDSN)
 	log.Printf("  AMQP: %s", cfg.amqpConnectionURL)
 	log.Printf("  Queue: exchange=%s kind=%s queue=%s", cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue)
@@ -138,10 +140,10 @@ func setUpConfig(cfg *config) {
 func validateConfig(cfg *config) {
 	var missingConfigs []string
 
-	if cfg.llmEndpoint == "" {
+	if cfg.llm.endpoint == "" {
 		missingConfigs = append(missingConfigs, "LLM_ENDPOINT")
 	}
-	if cfg.llmAuthorization == "" {
+	if cfg.llm.authorization == "" {
 		missingConfigs = append(missingConfigs, "LLM_AUTHORIZATION_KEY")
 	}
 	if cfg.dbDSN == "" {

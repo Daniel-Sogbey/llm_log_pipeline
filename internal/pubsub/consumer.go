@@ -46,7 +46,7 @@ func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable 
 		}()
 		for msg := range messages {
 			llmLogAnalysis, err := newLLM.AnalyzeLog(llm2.LLMRequestModel{
-				Model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+				Model: newLLM.Model,
 				Messages: []llm2.Message{
 					{
 						Role:    "user",
