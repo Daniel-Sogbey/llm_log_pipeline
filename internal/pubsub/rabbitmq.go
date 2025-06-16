@@ -1,8 +1,10 @@
 package pubsub
 
 import (
+	"errors"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
+	"math"
 	"time"
 )
 
@@ -13,15 +15,21 @@ type PubSub struct {
 
 func NewPubSubConnection(connectionURL string) (*PubSub, error) {
 	var connection *amqp.Connection
-	for {
+	//exponential backoff mechanism to ensure rabbitmq is connected
+	sleepDuration := 3.0
+	for i := 0; i < 5; i++ {
 		conn, err := amqp.Dial(connectionURL)
 		if err == nil {
 			connection = conn
 			break
 		}
+		backoff := time.Second * time.Duration(math.Pow(sleepDuration, float64(i)))
+		time.Sleep(backoff)
+		log.Printf("Retrying in %v seconds ...", backoff.Seconds())
+	}
 
-		time.Sleep(5 * time.Second)
-		log.Println("Retrying in 5 seconds ...")
+	if connection == nil {
+		return nil, errors.New("error establishing connection with rabbitmq")
 	}
 
 	channel, err := connection.Channel()

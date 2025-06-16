@@ -24,7 +24,7 @@
 
 ##  Architecture
 
-![Architecture](./docs/llm_log_pipeline.jpg)
+![Architecture](./docs/llm_log_pipeline_architecture_diagram.png)
 
 ---
 

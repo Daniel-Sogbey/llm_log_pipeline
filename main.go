@@ -32,7 +32,6 @@ func main() {
 	var cfg config
 	setUpConfig(&cfg)
 	validateConfig(&cfg)
-	log.Println(cfg)
 
 	ps, err := pubsub.NewPubSubConnection(cfg.amqpConnectionURL)
 	if err != nil {
