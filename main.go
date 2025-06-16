@@ -126,6 +126,12 @@ func setUpConfig(cfg *config) {
 		cfg.amqpConnectionURL = "amqp://guest:guest@rabbitmq:5672/"
 	}
 
+	log.Println("Effective Config:")
+	log.Printf("  LLM_URL: %s", cfg.llmURL)
+	log.Printf("  DB_DSN: %s", cfg.dbDSN)
+	log.Printf("  AMQP: %s", cfg.amqpConnectionURL)
+	log.Printf("  Queue: exchange=%s kind=%s queue=%s", cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue)
+
 }
 
 func validateConfig(cfg *config) {
