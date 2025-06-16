@@ -130,7 +130,7 @@ func setUpConfig(cfg *config) {
 }
 
 func validateConfig(cfg *config) {
-	missingConfigs := []string{}
+	var missingConfigs []string
 
 	if cfg.llmURL == "" {
 		missingConfigs = append(missingConfigs, "LLM_URL")

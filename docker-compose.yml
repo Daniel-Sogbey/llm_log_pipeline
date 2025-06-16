@@ -20,6 +20,9 @@ services:
 
   llm-log-processor:
     image: sogbey/llm_log_pipeline:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     depends_on:
       - rabbitmq
       - postgres
