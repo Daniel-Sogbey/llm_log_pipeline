@@ -44,17 +44,17 @@ Add the `.env` file:
 Update it with your own values:
 
 ```env
-AMQP_CONNECTION_URL=amqp://guest:guest@rabbitmq:5672/
+AMQP_CONNECTION_URL=amqp://guest:guest@host.docker.internal:5672/
 LLM_ENDPOINT=https://api.together.xyz/v1/chat/completions
-LLM_AUTHORIZATION_KEY=your_api_key
-DB_DSN=postgres://user:password@host:5432/dbname?sslmode=disable
+LLM_AUTHORIZATION_KEY=your_llm_api_key
+DB_DSN=postgres://admin:secret@host.docker.internal:5432/mydb?sslmode=disable
 EXCHANGE=logs
 EXCHANGE_KIND=fanout
 QUEUE=logs_queue
 ROUTING_KEY=
 ```
 
-### 3.  Pull from DockerHub
+### 3.  Pull and Run from DockerHub
 
 Pull and run the service:
 
@@ -64,7 +64,7 @@ docker run --env-file .env sogbey/llm_log_pipeline
 ```
 
 
-### 4.  Run with Docker
+### 4.  Build and Run with Docker Locally
 
 Build and run the service:
 
@@ -79,6 +79,17 @@ Use the provided Docker Compose setup to launch RabbitMQ, PostgreSQL, and the pi
 
 ```bash
 docker compose up --build
+
+#.env file should contain the following
+
+AMQP_CONNECTION_URL=amqp://guest:guest@rabbitmq
+LLM_ENDPOINT=https://api.together.xyz/v1/chat/completions
+LLM_AUTHORIZATION_KEY=your_llm_api_key
+DB_DSN=postgres://admin:secret@postgres/mydb?sslmode=disable
+EXCHANGE=logs
+EXCHANGE_KIND=fanout
+QUEUE=logs_queue
+ROUTING_KEY=
 ```
 
 * RabbitMQ Management UI: [http://localhost:15672](http://localhost:15672)
