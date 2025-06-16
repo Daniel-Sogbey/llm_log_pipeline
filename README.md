@@ -113,8 +113,8 @@ docker compose up --build
 
 Planned CI/CD capabilities:
 
-* [ ] GitHub Actions workflow for automated testing and builds
-* [ ] Docker image publishing to Docker Hub
+* [x] GitHub Actions workflow for automated testing and builds
+* [x] Docker image publishing to Docker Hub
 
 Once implemented, this will allow:
 

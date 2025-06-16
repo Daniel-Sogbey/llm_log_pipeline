@@ -52,12 +52,14 @@ func main() {
 
 	log.Println("Running llm log processor service...")
 
-	stop := make(chan os.Signal)
+	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	select {
-	case <-stop:
+	stopSignal := <-stop
+
+	if stopSignal != nil {
 		log.Printf("Detected %v signal. Shutting down llm log processor service \n", <-stop)
+		os.Exit(0)
 	}
 }
 
