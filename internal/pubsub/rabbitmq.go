@@ -6,13 +6,6 @@ import (
 	"time"
 )
 
-const (
-	Exchange = "logs"
-	Kind     = "fanout"
-	Queue    = "logs_queue"
-	Durable  = true
-)
-
 type PubSub struct {
 	connection *amqp.Connection
 	channel    *amqp.Channel
