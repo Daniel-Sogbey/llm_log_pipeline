@@ -54,7 +54,17 @@ QUEUE=logs_queue
 ROUTING_KEY=
 ```
 
-### 3.  Run with Docker
+### 3.  Pull from DockerHub
+
+Pull and run the service:
+
+```bash
+docker pull sogbey/llm_log_pipeline:latest
+docker run --env-file .env sogbey/llm_log_pipeline
+```
+
+
+### 4.  Run with Docker
 
 Build and run the service:
 
@@ -63,7 +73,7 @@ docker build -t llm_log_pipeline .
 docker run --env-file .env llm_log_pipeline
 ```
 
-### 4. (Optional) Docker Compose
+### 5. (Optional) Docker Compose
 
 Use the provided Docker Compose setup to launch RabbitMQ, PostgreSQL, and the pipeline:
 
