@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"log"
 	"log_processor/internal/data"
-	llm2 "log_processor/internal/llm"
+	"log_processor/internal/llm"
 )
 
-func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable bool, newLLM *llm2.LLM, db *sql.DB) error {
+func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable bool, newLLM *llm.LLM, db *sql.DB) error {
 
 	err := ps.ExchangeDeclare(exchange, kind, durable)
 	if err != nil {
@@ -45,12 +45,12 @@ func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable 
 			}
 		}()
 		for msg := range messages {
-			llmLogAnalysis, err := newLLM.AnalyzeLog(llm2.LLMRequestModel{
+			llmLogAnalysis, err := newLLM.AnalyzeLog(llm.LLMRequestModel{
 				Model: newLLM.Model,
-				Messages: []llm2.Message{
+				Messages: []llm.Message{
 					{
 						Role:    "user",
-						Content: llm2.Prompt(string(msg.Body)),
+						Content: llm.Prompt(string(msg.Body)),
 					},
 				},
 			})
