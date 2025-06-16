@@ -150,9 +150,6 @@ func validateConfig(cfg *config) {
 	if cfg.messagingQueue.queue == "" {
 		missingConfigs = append(missingConfigs, "QUEUE")
 	}
-	if cfg.messagingQueue.routingKey == "" {
-		missingConfigs = append(missingConfigs, "ROUTING_KEY")
-	}
 	if cfg.amqpConnectionURL == "" {
 		missingConfigs = append(missingConfigs, "AMQP_CONNECTION_URL")
 

@@ -1,17 +1,4 @@
 services:
-#  redis:
-#    image: redis:8-alpine
-#    restart: always
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - llm_log_processor_redis_volume:/data
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      timeout: 2s
-#      retries: 5
-#      interval: 10s
-
   rabbitmq:
     image: rabbitmq:3.13-management
     restart: always
@@ -32,12 +19,9 @@ services:
       POSTGRES_PASSWORD: secret
 
   llm-log-processor:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sogbey/llm_log_pipeline:latest
     depends_on:
       - rabbitmq
-      - redis
       - postgres
     env_file:
       - .env
