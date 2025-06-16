@@ -48,6 +48,7 @@ AMQP_CONNECTION_URL=amqp://guest:guest@host.docker.internal:5672/
 LLM_ENDPOINT=https://api.together.xyz/v1/chat/completions
 LLM_AUTHORIZATION_KEY=your_llm_api_key
 DB_DSN=postgres://admin:secret@host.docker.internal:5432/mydb?sslmode=disable
+LLM_MODEL=meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo
 EXCHANGE=logs
 EXCHANGE_KIND=fanout
 QUEUE=logs_queue
@@ -86,6 +87,7 @@ AMQP_CONNECTION_URL=amqp://guest:guest@rabbitmq
 LLM_ENDPOINT=https://api.together.xyz/v1/chat/completions
 LLM_AUTHORIZATION_KEY=your_llm_api_key
 DB_DSN=postgres://admin:secret@postgres/mydb?sslmode=disable
+LLM_MODEL=meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo
 EXCHANGE=logs
 EXCHANGE_KIND=fanout
 QUEUE=logs_queue
