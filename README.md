@@ -45,7 +45,7 @@ Update it with your own values:
 
 ```env
 AMQP_CONNECTION_URL=amqp://guest:guest@rabbitmq:5672/
-LLM_URL=https://api.together.xyz/v1/chat/completions
+LLM_ENDPOINT=https://api.together.xyz/v1/chat/completions
 LLM_AUTHORIZATION_KEY=your_api_key
 DB_DSN=postgres://user:password@host:5432/dbname?sslmode=disable
 EXCHANGE=logs

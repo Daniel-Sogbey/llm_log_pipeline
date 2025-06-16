@@ -16,7 +16,7 @@ import (
 
 type config struct {
 	amqpConnectionURL string
-	llmURL            string
+	llmEndpoint       string
 	llmAuthorization  string
 	dbDSN             string
 	messagingQueue    struct {
@@ -39,11 +39,11 @@ func main() {
 	}
 
 	llmConfig := &llm.LLM{
-		URL:           cfg.llmURL,
+		URL:           cfg.llmEndpoint,
 		Authorization: cfg.llmAuthorization,
 	}
 
-	db, err := connectDB(cfg)
+	db, err := connectDB(&cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +66,8 @@ func main() {
 	}
 }
 
-func connectDB(cfg config) (*sql.DB, error) {
+func connectDB(cfg *config) (*sql.DB, error) {
+	log.Println("Attempting to connect to DB with:", cfg.dbDSN)
 	db, err := sql.Open("postgres", cfg.dbDSN)
 	if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func connectDB(cfg config) (*sql.DB, error) {
 
 func setUpConfig(cfg *config) {
 	flag.StringVar(&cfg.amqpConnectionURL, "amqp-connection-url", "", "amqp connection url")
-	flag.StringVar(&cfg.llmURL, "llm-url", "", "llm url")
+	flag.StringVar(&cfg.llmEndpoint, "llm-endpoint", "", "llm url")
 	flag.StringVar(&cfg.llmAuthorization, "llm-auth", "", "llm auth key")
 	flag.StringVar(&cfg.dbDSN, "db-dsn", "", "db dsn")
 	flag.StringVar(&cfg.messagingQueue.exchange, "mq-exchange", "", "rabbitmq exchange name")
@@ -97,8 +98,8 @@ func setUpConfig(cfg *config) {
 	flag.Parse()
 
 	// Fallbacks from environment
-	if cfg.llmURL == "" {
-		cfg.llmURL = os.Getenv("LLM_URL")
+	if cfg.llmEndpoint == "" {
+		cfg.llmEndpoint = os.Getenv("LLM_ENDPOINT")
 	}
 	if cfg.llmAuthorization == "" {
 		cfg.llmAuthorization = os.Getenv("LLM_AUTHORIZATION_KEY")
@@ -127,7 +128,7 @@ func setUpConfig(cfg *config) {
 	}
 
 	log.Println("Effective Config:")
-	log.Printf("  LLM_URL: %s", cfg.llmURL)
+	log.Printf("  LLM_ENDPOINT: %s", cfg.llmEndpoint)
 	log.Printf("  DB_DSN: %s", cfg.dbDSN)
 	log.Printf("  AMQP: %s", cfg.amqpConnectionURL)
 	log.Printf("  Queue: exchange=%s kind=%s queue=%s", cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue)
@@ -137,8 +138,8 @@ func setUpConfig(cfg *config) {
 func validateConfig(cfg *config) {
 	var missingConfigs []string
 
-	if cfg.llmURL == "" {
-		missingConfigs = append(missingConfigs, "LLM_URL")
+	if cfg.llmEndpoint == "" {
+		missingConfigs = append(missingConfigs, "LLM_ENDPOINT")
 	}
 	if cfg.llmAuthorization == "" {
 		missingConfigs = append(missingConfigs, "LLM_AUTHORIZATION_KEY")
