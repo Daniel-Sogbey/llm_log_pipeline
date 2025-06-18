@@ -1,0 +1,47 @@
+name: Deploy To DigitalOcean
+on:
+  workflow_run:
+    workflows: ["Build and Push To DockerHub"]
+    types:
+      - completed
+
+jobs:
+  deploy-to-digitalocean:
+    runs-on: ubuntu-latest
+
+    env:
+      PRODUCTION_HOST_IP: ${{secrets.PRODUCTION_HOST_IP}}
+      DO_USERNAME: ${{secrets.DO_USERNAME}}
+
+    steps:
+      - name: Checkout Go Code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -H "$PRODUCTION_HOST_IP" >> ~/.ssh/known_hosts
+
+      - name: Create .env file
+        run: |
+          echo "$ENV_FILE_CONTENT" > .env
+        env:
+          ENV_FILE_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
+
+      - name: Copy Docker Compose files to droplet
+        run: |
+          ssh $DO_USERNAME@$PRODUCTION_HOST_IP "mkdir -p ~/llm_log_pipeline"
+          scp docker-compose.yml .env $DO_USERNAME@$PRODUCTION_HOST_IP:~/llm_log_pipeline/
+
+      - name: SSH and Deploy
+        run: |
+          ssh $DO_USERNAME@$PRODUCTION_HOST_IP << 'EOF'
+            cd ~/llm_log_pipeline
+            docker compose pull
+            docker compose down
+            docker compose up -d
+          EOF
