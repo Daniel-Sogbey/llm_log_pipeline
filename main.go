@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"flag"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/llm"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/pubsub"
 	_ "github.com/lib/pq"
 	"log"
-	"log_processor/internal/llm"
-	"log_processor/internal/pubsub"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,6 +20,7 @@ type config struct {
 	llm               struct {
 		endpoint      string
 		authorization string
+		model         string
 	}
 	messagingQueue struct {
 		exchange   string
@@ -43,6 +44,7 @@ func main() {
 	llmConfig := &llm.LLM{
 		URL:           cfg.llm.endpoint,
 		Authorization: cfg.llm.authorization,
+		Model:         cfg.llm.model,
 	}
 
 	db, err := connectDB(&cfg)
@@ -55,7 +57,7 @@ func main() {
 		log.Fatalf("Failed to consume messages. Error: %v", err)
 	}
 
-	log.Println("Running llm log processor service...")
+	log.Println("Running llm log pipeline service...")
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
@@ -63,7 +65,7 @@ func main() {
 	stopSignal := <-stop
 
 	if stopSignal != nil {
-		log.Printf("Detected %v signal. Shutting down llm log processor service \n", <-stop)
+		log.Printf("Detected %v signal. Shutting down llm log pipeline service \n", <-stop)
 		os.Exit(0)
 	}
 }
@@ -90,6 +92,7 @@ func setUpConfig(cfg *config) {
 	flag.StringVar(&cfg.amqpConnectionURL, "amqp-connection-url", "", "amqp connection url")
 	flag.StringVar(&cfg.llm.endpoint, "llm-endpoint", "", "llm url")
 	flag.StringVar(&cfg.llm.authorization, "llm-auth", "", "llm auth key")
+	flag.StringVar(&cfg.llm.model, "llm-model", "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo", "llm model")
 	flag.StringVar(&cfg.dbDSN, "db-dsn", "", "db dsn")
 	flag.StringVar(&cfg.messagingQueue.exchange, "mq-exchange", "", "rabbitmq exchange name")
 	flag.StringVar(&cfg.messagingQueue.kind, "mq-exchange-kind", "", "rabbitmq exchange kind")

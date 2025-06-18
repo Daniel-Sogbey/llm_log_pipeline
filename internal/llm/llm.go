@@ -3,7 +3,7 @@ package llm
 import (
 	"bytes"
 	"encoding/json"
-	"log_processor/internal/requester"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/requester"
 	"net/http"
 )
 

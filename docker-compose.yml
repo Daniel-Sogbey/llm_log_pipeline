@@ -5,6 +5,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - llm_log_pipeline_rabbitmq_volume:/var/lib/rabbitmq
 
   postgres:
     image: postgres:14
@@ -12,17 +14,17 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - llm_log_processor_postgres_volume:/var/lib/postgresql/data
+      - llm_log_pipeline_postgres_volume:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: admin
       POSTGRES_DB: mydb
       POSTGRES_PASSWORD: secret
 
-  llm-log-processor:
-    image: sogbey/llm_log_pipeline:latest
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+  llm-log-pipeline:
+#    image: sogbey/llm_log_pipeline:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - rabbitmq
       - postgres
@@ -30,5 +32,6 @@ services:
       - .env
 
 volumes:
-  llm_log_processor_redis_volume:
-  llm_log_processor_postgres_volume:
+  llm_log_pipeline_redis_volume:
+  llm_log_pipeline_postgres_volume:
+  llm_log_pipeline_rabbitmq_volume:

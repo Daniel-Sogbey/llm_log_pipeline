@@ -2,7 +2,6 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/migrations/000001_create_log_analysis_table.down.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/migrations/000001_create_log_analysis_table.up.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>

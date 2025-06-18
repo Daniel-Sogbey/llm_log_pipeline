@@ -2,9 +2,9 @@ package pubsub
 
 import (
 	"database/sql"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/data"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/llm"
 	"log"
-	"log_processor/internal/data"
-	"log_processor/internal/llm"
 )
 
 func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable bool, newLLM *llm.LLM, db *sql.DB) error {
@@ -58,6 +58,8 @@ func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable 
 			if err != nil {
 				log.Printf("ERROR GETTING LLM LOG ANALYSIS %v\n", err)
 			}
+
+			log.Printf("GETTING LLM LOG ANALYSIS %v\n", llmLogAnalysis)
 
 			err = data.LogAnalysisDB{DB: db}.ExtractAndInsertLogAnalysis(llmLogAnalysis.Choices[0].Message.Content)
 			if err != nil {
