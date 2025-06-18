@@ -1,9 +1,6 @@
 name: Continuous Integration Run
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
