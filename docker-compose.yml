@@ -21,10 +21,10 @@ services:
       POSTGRES_PASSWORD: secret
 
   llm-log-pipeline:
-#    image: sogbey/llm_log_pipeline:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sogbey/llm_log_pipeline:latest
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     depends_on:
       - rabbitmq
       - postgres
