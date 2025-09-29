@@ -4,14 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/llm"
-	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/pubsub"
-	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/llm"
+	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/pubsub"
+	_ "github.com/lib/pq"
 )
 
 type config struct {
@@ -41,7 +42,7 @@ func main() {
 		log.Fatalf("Failed to create new pubsub connection. Error: %v", err)
 	}
 
-	llmConfig := &llm.LLM{
+	llmConfig := &llm.TogetherAi{
 		URL:           cfg.llm.endpoint,
 		Authorization: cfg.llm.authorization,
 		Model:         cfg.llm.model,
@@ -52,7 +53,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = ps.ConsumeMessage(cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue, cfg.messagingQueue.routingKey, cfg.messagingQueue.durable, llmConfig, db)
+	err = ps.ConsumeMessage(cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue,
+		cfg.messagingQueue.routingKey, cfg.messagingQueue.durable, llmConfig, db)
 	if err != nil {
 		log.Fatalf("Failed to consume messages. Error: %v", err)
 	}
@@ -136,7 +138,8 @@ func setUpConfig(cfg *config) {
 	log.Printf("  LLM_ENDPOINT: %s", cfg.llm.endpoint)
 	log.Printf("  DB_DSN: %s", cfg.dbDSN)
 	log.Printf("  AMQP: %s", cfg.amqpConnectionURL)
-	log.Printf("  Queue: exchange=%s kind=%s queue=%s", cfg.messagingQueue.exchange, cfg.messagingQueue.kind, cfg.messagingQueue.queue)
+	log.Printf("  Queue: exchange=%s kind=%s queue=%s", cfg.messagingQueue.exchange, cfg.messagingQueue.kind,
+		cfg.messagingQueue.queue)
 
 }
 

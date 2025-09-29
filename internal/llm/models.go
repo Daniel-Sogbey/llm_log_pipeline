@@ -2,7 +2,7 @@ package llm
 
 import "encoding/json"
 
-type LLMRequestModel struct {
+type TogetherAiLLMRequestModel struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
@@ -12,7 +12,7 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-type LLMResponseModel struct {
+type TogetherAiLLMResponseModel struct {
 	ID      string `json:"id"`
 	Object  string `json:"object"`
 	Created int    `json:"created"`

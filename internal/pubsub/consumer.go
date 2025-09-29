@@ -2,12 +2,14 @@ package pubsub
 
 import (
 	"database/sql"
+	"log"
+
 	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/data"
 	"github.com/Daniel-Sogbey/llm_log_pipeline/internal/llm"
-	"log"
 )
 
-func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable bool, newLLM *llm.LLM, db *sql.DB) error {
+func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable bool, llmProvider any,
+	db *sql.DB) error {
 
 	err := ps.ExchangeDeclare(exchange, kind, durable)
 	if err != nil {
@@ -45,25 +47,31 @@ func (ps *PubSub) ConsumeMessage(exchange, kind, queueName, key string, durable 
 			}
 		}()
 		for msg := range messages {
-			llmLogAnalysis, err := newLLM.AnalyzeLog(llm.LLMRequestModel{
-				Model: newLLM.Model,
-				Messages: []llm.Message{
-					{
-						Role:    "user",
-						Content: llm.Prompt(string(msg.Body)),
+			switch llmProvider.(type) {
+			case llm.LLM[llm.TogetherAiLLMRequestModel, llm.TogetherAiLLMResponseModel]:
+				req := llm.TogetherAiLLMRequestModel{
+					Model: llmProvider.(*llm.TogetherAi).Model,
+					Messages: []llm.Message{
+						{
+							Role:    "user",
+							Content: llm.Prompt(string(msg.Body)),
+						},
 					},
-				},
-			})
+				}
 
-			if err != nil {
-				log.Printf("ERROR GETTING LLM LOG ANALYSIS %v\n", err)
-			}
+				var llmLogAnalysis *llm.TogetherAiLLMResponseModel
+				llmLogAnalysis, err = llmProvider.(*llm.TogetherAi).AnalyzeLog(req)
 
-			log.Printf("GETTING LLM LOG ANALYSIS %v\n", llmLogAnalysis)
+				if err != nil {
+					return
+				}
 
-			err = data.LogAnalysisDB{DB: db}.ExtractAndInsertLogAnalysis(llmLogAnalysis.Choices[0].Message.Content)
-			if err != nil {
-				log.Println("Error Extracting and Inserting Log Analysis", err)
+				err = data.LogAnalysisDB{DB: db}.ExtractAndInsertLogAnalysis(llmLogAnalysis.Choices[0].Message.Content)
+				if err != nil {
+					return
+				}
+			default:
+				log.Printf("Invalid llm provider")
 			}
 		}
 	}()

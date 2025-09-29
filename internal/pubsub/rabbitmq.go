@@ -2,10 +2,11 @@ package pubsub
 
 import (
 	"errors"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
 	"math"
 	"time"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type PubSub struct {

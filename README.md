@@ -9,13 +9,13 @@
 * Parses raw application logs with stack traces
 * Uses LLM to extract:
 
-    * Root cause
-    * Severity
-    * Time of occurrence
-    * Stack trace analysis
-    * File and line number
-    * Suggested fix
-    * Summary
+  * Root cause
+  * Severity
+  * Time of occurrence
+  * Stack trace analysis
+  * File and line number
+  * Suggested fix
+  * Summary
 * Stores enriched logs in PostgreSQL
 * Runs as a Dockerized microservice
 * Easily extendable (e.g., dashboard, alerting)
